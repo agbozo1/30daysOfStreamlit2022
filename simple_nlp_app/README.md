@@ -3,7 +3,7 @@ Built with Streamlit, this simple app makes use of the following packages:
 - [spaCy](https://spacy.io/usage): For named-entity recognition
 - [TextBlob](https://textblob.readthedocs.io/en/dev/#): For lemmatization, sentence correction and sentence subjectivity/polarity
 
-![screenshot](simple_nlp_app\image.PNG)
+![screenshot](image.PNG)
 
 *to run the code --> streamlit run app.py*
 
