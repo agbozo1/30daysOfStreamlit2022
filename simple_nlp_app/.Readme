@@ -6,3 +6,5 @@ Built with Streamlit, this simple app makes use of the following packages:
 ![screenshot](simple_nlp_app\image.PNG)
 
 *to run the code --> streamlit run app.py*
+
+Enjoy!
