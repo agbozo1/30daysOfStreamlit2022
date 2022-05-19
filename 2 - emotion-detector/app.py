@@ -2,10 +2,11 @@ import imp
 import cv2
 import numpy as np
 from PIL import Image, ImageOps
+import io
 
 import streamlit as st
 import tensorflow as tf
-
+np.set_printoptions(precision=1)
 
 def emotion_classifier(image_file, model_location):
 
@@ -18,8 +19,31 @@ def emotion_classifier(image_file, model_location):
     image_data[0] = normalized_image_array
 
     #predict
-    emotion_model = tf.keras.models.load_models(model_location)
+    emotion_model = tf.keras.models.load_model(model_location)
     prediction = emotion_model.predict(image_data)
+
+    
+    
+    st.write(":smile: - Happy") 
+    st.progress(round(np.float(prediction[0][0]),2))
+
+    st.write(":neutral_face: - Neutral") 
+    st.progress(round(np.float(prediction[0][1]),2))
+    
+    st.write(":pensive: - Sad") 
+    st.progress(round(np.float(prediction[0][2]),2))
+
+    st.write(":angry: - Angry") 
+    st.progress(round(np.float(prediction[0][3]),2))
+
+    st.write(":anguished: - Scared") 
+    st.progress(round(np.float(prediction[0][4]),2))
+    
+    #st.progress(prediction[0][1] * 100)
+    #st.progress(prediction[0][2] * 100)
+    #st.progress(prediction[0][3] * 100)
+    #st.progress(prediction[0][4] * 100)
+    
 
     return np.argmax(prediction)
 
@@ -38,21 +62,56 @@ with st.sidebar:
     st.markdown("**_Ural Federal University_**")
 col1, col2 = st.columns(2)
 with col1:
+    st.markdown('### **Option 1: Uploader**')
+    img_upload = st.file_uploader('Use File Uploader',type=['jpg','png','jpeg'])
+
+    if img_upload is not None:
+        im1 = Image.open(img_upload).convert('RGB')
+        emotion_classifier(im1, "keras_model.h5")
+
+    st.write("OR")
+
     switch = st.radio("", ("Off", "On"))
 
+    st.markdown('### **Option 2: Camera**')
     if switch == "On":
         st.success("Camera On") #notification
         cam = cv2.VideoCapture(0)
-        st_frame = st.empty()
-        ret, img = cam.read()
-        while ret:
-            ret, img = cam.read()
-            if ret:
-                st_frame.image(img, channels='BGR')
-        
-        
+        #st_frame = st.empty()
+       
+        btn_mood = st.button("Capture Mood")
+   
+        if btn_mood:
+            
+            lp, img = cam.read()
+
+            if lp:
+                st.image(img)
+                
+
+            # encode
+            img_check, img_buffer = cv2.imencode(".jpg", img)
+            io_bytes_buf = io.BytesIO(img_buffer)
+
+            decoded_img = cv2.imdecode(np.frombuffer(io_bytes_buf.getbuffer(), np.uint8), -1)
+            colorized_img = cv2.cvtColor(decoded_img, cv2.COLOR_BGR2RGB)
+            
+            pil_image=Image.fromarray(colorized_img) 
+
+            #pass image from memory into model
+            emotion_classifier(pil_image, "keras_model.h5")
+                
+
     else:
         st.warning("Camera Off")
         cam = cv2.VideoCapture(0)
         cam.release()
-        
+    
+    #test for existence of image
+    image = cv2.imread("opencv.png")
+    if image is None:
+        st.write('No Image Located')
+    else:
+        image = Image.open("opencv.png")
+
+#idea 3. web scrapper - csv
