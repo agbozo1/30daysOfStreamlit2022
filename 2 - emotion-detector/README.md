@@ -28,4 +28,6 @@ Training was performed on Google Teachable Machine, a low-code machine solution.
 
 #### Built with
 
-![Teachable Machine](readme_imgs/teachable.jpg =250)
+![Teachable Machine](readme_imgs/teachable.jpg)
+![Teachable Machine](readme_imgs/stream.png)
+![Teachable Machine](readme_imgs/tf-js.png)
