@@ -24,10 +24,10 @@ def emotion_classifier(image_file, model_location):
 
     
     
-    st.write(":smile: - Happy") 
+    st.write(":neutral_face: - Neutral") 
     st.progress(round(np.float(prediction[0][0]),2))
 
-    st.write(":neutral_face: - Neutral") 
+    st.write(":smile: - Happy") 
     st.progress(round(np.float(prediction[0][1]),2))
     
     st.write(":pensive: - Sad") 
@@ -68,7 +68,7 @@ with col1:
     if img_upload is not None:
         im1 = Image.open(img_upload).convert('RGB')
         emotion_classifier(im1, "keras_model.h5")
-
+        st.image(im1)
     st.write("OR")
 
     switch = st.radio("", ("Off", "On"))
