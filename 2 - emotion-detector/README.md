@@ -25,3 +25,7 @@ Training was performed on Google Teachable Machine, a low-code machine solution.
 
 **Supervisor**:
 - Ebenezer Agbozo (eagbozo@urfu.ru | agbozo1@gmail.com)
+
+#### Built with
+
+![Teachable Machine](readme_imgs/teachable.jpg =250)
