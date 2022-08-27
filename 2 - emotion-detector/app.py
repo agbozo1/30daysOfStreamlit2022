@@ -4,6 +4,7 @@ import numpy as np
 from PIL import Image, ImageOps
 import io
 
+
 import streamlit as st
 import tensorflow as tf
 np.set_printoptions(precision=1)
@@ -22,7 +23,6 @@ def emotion_classifier(image_file, model_location):
     emotion_model = tf.keras.models.load_model(model_location)
     prediction = emotion_model.predict(image_data)
 
-    
     
     st.write(":neutral_face: - Neutral") 
     st.progress(round(np.float(prediction[0][0]),2))
@@ -43,9 +43,20 @@ def emotion_classifier(image_file, model_location):
     #st.progress(prediction[0][2] * 100)
     #st.progress(prediction[0][3] * 100)
     #st.progress(prediction[0][4] * 100)
-    
-
     return np.argmax(prediction)
+
+
+def take_a_shot(img):
+
+    img_check, img_buffer = cv2.imencode(".jpg", img)
+    io_bytes_buf = io.BytesIO(img_buffer)
+
+    decoded_img = cv2.imdecode(np.frombuffer(io_bytes_buf.getbuffer(), np.uint8), -1)
+    colorized_img = cv2.cvtColor(decoded_img, cv2.COLOR_BGR2RGB)
+    
+    pil_image=Image.fromarray(colorized_img) 
+
+    return pil_image
 
 #teachable machine
 
@@ -65,46 +76,49 @@ with col1:
     st.markdown('### **Option 1: Uploader**')
     img_upload = st.file_uploader('Use File Uploader',type=['jpg','png','jpeg'])
 
+    #IMAGE UPLOADER OPTION
     if img_upload is not None:
         im1 = Image.open(img_upload).convert('RGB')
         emotion_classifier(im1, "keras_model.h5")
-        st.image(im1)
+        #st.image(im1)
+
     st.write("OR")
 
+    #CAMERA OPTION
+    #camera on/off switch
     switch = st.radio("", ("Off", "On"))
 
     st.markdown('### **Option 2: Camera**')
+    cam = cv2.VideoCapture(0)
+    FRAME_WINDOW = st.image([])
+
     if switch == "On":
         st.success("Camera On") #notification
-        cam = cv2.VideoCapture(0)
+        
         #st_frame = st.empty()
        
         btn_mood = st.button("Capture Mood")
-   
-        if btn_mood:
-            
-            lp, img = cam.read()
+           
+        cam_state, img = cam.read()
+        #if switch:
+        
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        FRAME_WINDOW.image(img)  
 
-            if lp:
-                st.image(img)
-                
 
+        if btn_mood:    
+            #FRAME_WINDOW.image(img)
             # encode
-            img_check, img_buffer = cv2.imencode(".jpg", img)
-            io_bytes_buf = io.BytesIO(img_buffer)
-
-            decoded_img = cv2.imdecode(np.frombuffer(io_bytes_buf.getbuffer(), np.uint8), -1)
-            colorized_img = cv2.cvtColor(decoded_img, cv2.COLOR_BGR2RGB)
+            pil_image = take_a_shot(img)
             
-            pil_image=Image.fromarray(colorized_img) 
-
             #pass image from memory into model
             emotion_classifier(pil_image, "keras_model.h5")
+            pil_image=None
                 
-
+                
+    #switch off camera
     else:
-        st.warning("Camera Off")
-        cam = cv2.VideoCapture(0)
+        st.warning("Camera Off")        
         cam.release()
     
     #test for existence of image
