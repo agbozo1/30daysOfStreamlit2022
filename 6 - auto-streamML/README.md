@@ -1,6 +1,6 @@
 ### **Auto ML Project**
 
-This was inspired by a tutorial by <a name="https://github.com/nicknochnack">@nicknochnack</a>
+This was inspired by a tutorial by <a href="https://github.com/nicknochnack">@nicknochnack</a>
 
 ![pic](about-auto-stream.JPG)
 
